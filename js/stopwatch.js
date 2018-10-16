@@ -28,13 +28,13 @@ function Stopwatch(elem) {
 		if (minutes.length < 2) minutes = '0' + minutes;
 		if (seconds.length < 6) seconds = '0' + seconds;
 
-		return hours + "h " + minutes + "m " + seconds + "s" ;
+		return hours + 'h ' + minutes + 'm ' + seconds + 's' ;
 	}
 	
 	currentTime = function() {
 		var currTime = new Date;
 		
-		return currTime.toLocaleDateString() + " " + currTime.toTimeString();
+		return currTime.toLocaleDateString() + ' ' + currTime.toTimeString();
 	}
 	
 	this.start = function(initialTime) {

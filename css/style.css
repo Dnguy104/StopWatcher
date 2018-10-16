@@ -3,13 +3,13 @@ body {
 	margin-top: 200px;
 	background-color: #DB4437;
 	font-family: Menlo;
+	color: white;
 }
 
 #timer {
 	font-size: 50px;
 	font-weight: 200;
 	margin: 20px auto;
-	color: white;
 }
 
 button {
@@ -38,7 +38,6 @@ table {
 
 table, th, td {
 	border:  1px solid white;
-	color: white;
 	border-collapse: collapse;
 }
 

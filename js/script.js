@@ -1,5 +1,6 @@
 var timer = document.getElementById('timer');
 var toggleBtn = document.getElementById('toggle');
+var resetBtn = document.getElementById('reset');
 
 var timeList = {
 	times: [],
@@ -30,6 +31,8 @@ var views = {
 		}
 		localStorage.setItem('times',JSON.stringify(timeList.times));
 		this.recoverData();
+		this.initializeBtn();
+		
 		this.displayTimes();
 	},
 	displayTimes: function() {
@@ -43,12 +46,18 @@ var views = {
 								<th>Finish Location</th>
 								<th>Elapsed Time</th>
 							</tr>`;
-		timeList.times.forEach(function(elem1) {
+		timeList.times.forEach(function(elem) {
 			var entry = document.createElement('tr');
-			for (var prop in elem1) {
-			    if (elem1.hasOwnProperty(prop) && prop != 'isComplete') {
-					var data = document.createElement('td');
-					data.innerHTML = elem1[prop];
+			for (var prop in elem) {
+			    if (elem.hasOwnProperty(prop) && prop != 'isComplete') {
+			    	var data = document.createElement('td');
+			    	
+			    	if (prop == 'startTime' || prop == 'stopTime') {
+			    		data.innerHTML = elem[prop].slice(0,19) + '<br>'+ elem[prop].slice(19);
+			    	} 
+			    	else {
+			    		data.innerHTML = elem[prop];
+			    	}
 					entry.appendChild(data);
 					timeTbl.appendChild(entry);
 				}
@@ -87,8 +96,14 @@ var views = {
 				toggleBtn.textContent = 'Start!';
 			}
 		});		
+		
+		var scope = function() {
+			timeList.times = [];
+			this.displayTimes();
+		}
+		resetBtn.addEventListener('click', scope.bind(this));
 	}
-}
+};
 
 var handlers = {
 	start: function(time) {
@@ -116,7 +131,7 @@ function findLocation(index, key) {
 	var output = document.getElementById('location');
 	
 	if (!navigator.geolocation){
-    	output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
+    	output.innerHTML = '<p>Geolocation is not supported by your browser</p>';
 	    return;
 	}
 	
@@ -127,6 +142,10 @@ function findLocation(index, key) {
 		timeList.addData(index, key, 'lat: ' + latitude.toFixed(4) + '<br>' + 'long: ' + longitude.toFixed(4));
 		if (key == 'stopLocation') timeList.complete(index);
 		views.displayTimes();
+	}
+	
+	function showMap(position) {
+		
 	}
 	
 	function error() {
@@ -145,5 +164,4 @@ var elem = {
 var watch = new Stopwatch(elem);
 
 views.initializeList();
-views.initializeBtn();
 
