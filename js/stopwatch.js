@@ -34,14 +34,14 @@ function Stopwatch(elem) {
 	currentTime = function() {
 		var currTime = new Date;
 		
-		return currTime.toLocaleDateString()+ '<br>' + currTime.toTimeString();
+		return currTime.toLocaleDateString() + " " + currTime.toTimeString();
 	}
 	
-	this.start = function() {
+	this.start = function(initialTime) {
 		if (!this.isOn) {
 			time = 0;
 			interval = setInterval(update.bind(this),elem['delay']);
-			offset = new Date;
+			offset = new Date(initialTime);
 			this.isOn = true;
 			
 			return currentTime();
