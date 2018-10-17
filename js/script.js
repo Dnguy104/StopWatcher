@@ -1,7 +1,3 @@
-var timer = document.getElementById('timer');
-var toggleBtn = document.getElementById('toggle');
-var resetBtn = document.getElementById('reset');
-
 var timeList = {
 	times: [],
 	addRow: function(start){
@@ -24,16 +20,58 @@ var timeList = {
 }
 
 var views = {
-	initializeList: function() {
+	locationIsOn: 0,
+	initialized: false,
+	location: {
+		latitude: '',
+		longitude: ''
+	},
+	initialize: function() {
 		var localS  = localStorage.getItem('times');
 		if(localS) {
 			 timeList.times = JSON.parse(localStorage.getItem('times'));
 		}
 		localStorage.setItem('times',JSON.stringify(timeList.times));
-		this.recoverData();
-		this.initializeBtn();
 		
+		var output = document.getElementById('location');
+		var mainBtn = document.getElementById('mainBtn');
+		var pending = document.getElementById('pending');
+		var checkbox = document.querySelector('input');
+
+		function success(position) {
+			views.location.latitude = position.coords.latitude.toFixed(4);
+			views.location.longitude = position.coords.longitude.toFixed(4);
+			
+			defaultList(true);
+		}
+
+		function error() {
+		    views.location.latitude = 'n/a';
+			views.location.longitude = 'n/a';
+			
+			views.locationIsOn = 0;
+			defaultList(false);
+		}
+		
+		function defaultList(accept) {
+			if (!this.initialized) {
+				views.initialized = true;
+				mainBtn.style.display = 'block';
+				pending.style.display = 'none';
+				checkbox.checked = accept;
+			}
+		}
+		
+		this.recoverData();
 		this.displayTimes();
+		if (!this.locationIsOn) {
+			if (!navigator.geolocation){
+				output.innerHTML = '<p>Geolocation is not supported by your browser</p>';
+			    return;
+			}
+			this.locationIsOn = navigator.geolocation.watchPosition(success.bind(this), error.bind(this));
+		}
+
 	},
 	displayTimes: function() {
 		var timeTbl = document.getElementById('timeTbl');
@@ -66,42 +104,70 @@ var views = {
 		});
 	},
 	recoverData: function() {
+		var toggleBtn = document.getElementById('toggle');
+		
 		for (let index = 0; index < timeList.times.length; index++) {
 			var elem = timeList.times[index];
 			
 		    if (elem.isComplete == false) {
 		    	if (elem.stopTime == '') {
 					var startTime = watch.start(new Date(elem['startTime']));
-					if (elem.startLocation == 'Loading...') findLocation(index, 'startLocation');
 					toggleBtn.textContent = 'Finish';
 					return;
 				}
-				if (elem.startLocation == 'Loading...') findLocation(index, 'startLocation');
-				if (elem.stopLocation == 'Loading...') findLocation(index, 'stopLocation');				
+			
 			}		
 		}
 	},
 	initializeBtn: function() {
+		var toggleBtn = document.getElementById('toggle');
+		var resetBtn = document.getElementById('reset');
+		var timer = document.getElementById('timer');
+		var checkbox = document.querySelector('input');
+		
 		toggleBtn.addEventListener('click', function() {
 			if (!watch.isOn) {
 				var startTime = watch.start(new Date);
 				
 				handlers.start(startTime);
-				toggleBtn.textContent = 'Finish!';
+				toggleBtn.innerHTML = 'Finish!';
 			}
 			else {
 				var endTime = watch.stop();
 
 				handlers.stop(endTime);
-				toggleBtn.textContent = 'Start!';
+				toggleBtn.innerHTML = 'Start!';
 			}
 		});		
 		
-		var scope = function() {
+		var reset = function() {
 			timeList.times = [];
+			var endTime = watch.stop();
+			toggleBtn.innerHTML = 'Start!';
+			timer.textContent = '00h 00m 00.000s';
 			this.displayTimes();
 		}
-		resetBtn.addEventListener('click', scope.bind(this));
+		resetBtn.addEventListener('click', reset.bind(this));
+		
+		var check = function() {
+			if (checkbox.checked) {
+				this.initialized = false;
+				this.initialize();
+			}
+			else {
+				this.endWatchLocation(this.locationIsOn);
+				this.locationIsOn = 0;
+				checkbox.checked = false;
+			}
+		}
+		checkbox.addEventListener('change', check.bind(this));
+		
+		
+	},
+	endWatchLocation: function() {
+		if (this.locationIsOn) {
+			navigator.geolocation.clearWatch(this.locationIsOn);
+		}
 	}
 };
 
@@ -110,58 +176,29 @@ var handlers = {
 		timeList.addRow(time);
 		var newIndex = timeList.times.length - 1;
 		timeList.addData(newIndex, 'startTime', time);
-		timeList.addData(newIndex, 'startLocation', 'Loading...');
-		findLocation(newIndex, 'startLocation');
-		
+		timeList.addData(newIndex, 'startLocation', 'lat: ' + views.location.latitude
+			+ '<br>' + 'long: ' + views.location.longitude);
 		views.displayTimes();
 	},
 	stop: function(time) {		
 		var newIndex = timeList.times.length - 1;
 		timeList.addData(newIndex, 'stopTime', time['currentTime']);
-		timeList.addData(newIndex, 'stopLocation', 'Loading...');
+		timeList.addData(newIndex, 'stopLocation', 'lat: ' + views.location.latitude
+			 + '<br>' + 'long: ' + views.location.longitude);
 		timeList.addData(newIndex, 'elapsedTime', time['stopwatchTime']);
-		findLocation(newIndex, 'stopLocation');
 		
+		timeList.complete(newIndex);
 		views.displayTimes();
 	}
-	
 };
 
-function findLocation(index, key) {
-	var output = document.getElementById('location');
-	
-	if (!navigator.geolocation){
-    	output.innerHTML = '<p>Geolocation is not supported by your browser</p>';
-	    return;
-	}
-	
-	function success(position) {
-		var latitude  = position.coords.latitude;
-    	var longitude = position.coords.longitude;
-    	
-		timeList.addData(index, key, 'lat: ' + latitude.toFixed(4) + '<br>' + 'long: ' + longitude.toFixed(4));
-		if (key == 'stopLocation') timeList.complete(index);
-		views.displayTimes();
-	}
-	
-	function showMap(position) {
-		
-	}
-	
-	function error() {
-	    timeList.addData(index, key, 'lat: n/a' + '<br>' + 'long: n/a');
-	    if (key == 'stopLocation') timeList.complete(index);
-	    views.displayTimes();
-	}
-	
-	navigator.geolocation.getCurrentPosition(success, error);
-}
 
 var elem = {
-	timer: timer,
+	timer: document.getElementById('timer'),
 	delay: 70
 }
 var watch = new Stopwatch(elem);
 
-views.initializeList();
+views.initialize();
+views.initializeBtn();
 

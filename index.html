@@ -5,10 +5,17 @@
 	<link rel="stylesheet" style="css" href="css/style.css">
 </head>	
 <body>
-	<h1 id="timer">00h 00m 00.000s</h1>
+	<h1 id="title">Stopwatch Timesheet</h1>
 	
-	<button id="toggle">Start!</button>
-	<button id="reset">Reset!</button>
+	<h1 id="timer">00h 00m 00.000s</h1>
+	<div id="mainBtn">
+		<button id="toggle">Start!</button>
+		<button id="reset">Reset!</button>
+		<input type="checkbox" > GPS
+	</div>
+	<div id="pending">
+		<h2>Pending Geolocation...</h2>
+	</div>
 	
 	<table id="timeTbl">
 		<tr>
