@@ -14,7 +14,7 @@ body {
 	padding: 10px;
 }
 
-/* stopwatch timer element*/
+/* stopwatch elapsedTimer element*/
 #timer {
 	font-size: 50px;
 	font-weight: 200;
@@ -40,6 +40,10 @@ input {
 }
 #pending {
 	display: block;
+}
+
+#gps {
+	display: inline-block;
 }
 
 button:hover {

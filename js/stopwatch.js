@@ -12,7 +12,7 @@ function Stopwatch(elem) {
 		initial time of start
 		interval - keeps the id returned by setInterval() to be used in clearInterval()
 		offset - keeps the time of the most recent update
-		isOn - boolean flag that checks if stopwatch is on/off
+		isOn - public boolean flag that checks if stopwatch is on/off
 	*/
 	var elapsedTime = 0;
 	var interval;
@@ -26,7 +26,7 @@ function Stopwatch(elem) {
 		since the most recent update() call, and add it to elapsedTime.
 		- Update stopwatch DOM element.
 	*/
-	update = function() {
+	function update() {
 		if(this.isOn) {
 			elapsedTime += timer();	
 		}
@@ -38,7 +38,7 @@ function Stopwatch(elem) {
 		- Assigns current time to offset.
 		- To be used in update() to calculate change in time.
 	*/
-	timer = function() {
+	function timer() {
 		var now = new Date;
 		var passedTime = now - offset;
 		offset = now;
@@ -51,7 +51,7 @@ function Stopwatch(elem) {
 		hours, minutes, and seconds.
 		- returns a string of hours, minutes, and seconds
 	*/
-	format = function(milliseconds) {
+	 function format(milliseconds) {
 		var hours = Math.floor(milliseconds / 3600000).toString();
 		var minutes = Math.floor((milliseconds % 3600000) / 60000).toString();
 		var seconds = (((milliseconds % (3600000 * 60000)) / 1000) % 60).toFixed(3);
@@ -66,7 +66,7 @@ function Stopwatch(elem) {
 	/*
 		- This function returns a string with the current time and time zone.
 	*/
-	currentTime = function() {
+	function currentTime() {
 		var currTime = new Date;
 		
 		return currTime.toLocaleDateString() + ' ' + currTime.toTimeString();

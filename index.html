@@ -5,22 +5,26 @@
 	<link rel="stylesheet" style="css" href="css/style.css">
 </head>	
 <body>
+	<!---------------- title and timer -------------------->
 	<h1 id="title">Stopwatch Timesheet</h1>
-	
 	<h1 id="timer">00h 00m 00.000s</h1>
+	
+	
+	<!---------------- buttons -------------------->
 	<div id="mainBtn">
 		<button id="toggle">Start!</button>
 		<button id="reset">Reset!</button>
-		<input type="checkbox" > GPS
+		<input type="checkbox" > <p id="gps">GPS</p>
 	</div>
 	<div id="pending">
 		<h2>Pending Geolocation...</h2>
 	</div>
-	
+	<!---------------- time table -------------------->
 	<table id="timeTbl">
 		
 	</table>
 	
+	<!---------------- geolocation support -------------------->
 	<div id="location"></div>
 	
 	<script src="js/stopwatch.js"></script>
