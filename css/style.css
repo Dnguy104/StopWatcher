@@ -26,18 +26,14 @@ button {
 	width: 100px;
 	background-color: rgba(255,201,196, 0.3);
 	color: white;
-	border-width: 3px;
-	border-color: white;
+	border:  3px solid white;
 	font-size: 15px;
-}
-
-input {
-	height: 15px;
 }
 
 #mainBtn {
 	display: none;
 }
+
 #pending {
 	display: block;
 }
@@ -57,11 +53,10 @@ button:focus {
 
 /* ---------- table data elements -----------*/
 table {
-	margin: 50px auto 100px auto;
+	margin: 20px auto 100px auto;
 	width: 85%;
 	font-size: 12px;
 	background-color: rgba(181,115,109, 0.3);
-
 }
 
 td, th {
