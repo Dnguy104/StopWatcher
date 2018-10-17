@@ -61,7 +61,6 @@ var views = {
 				checkbox.checked = accept;
 			}
 		}
-		
 		this.recoverData();
 		this.displayTimes();
 		if (!this.locationIsOn) {

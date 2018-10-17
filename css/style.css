@@ -4,7 +4,7 @@ body {
 	font-family: Menlo;
 	color: white;
 }
-
+/* title element*/
 #title {
 	margin: 80px auto 10px auto;
 	font-weight: 200;
@@ -14,16 +14,13 @@ body {
 	padding: 10px;
 }
 
-hr {
-	width: 60%;
-}
-
+/* stopwatch timer element*/
 #timer {
 	font-size: 50px;
 	font-weight: 200;
 	margin: 75px 0px 25px 0px;
 }
-
+/* ---------- button elements -----------*/
 button {
 	height: 28px;
 	width: 100px;
@@ -52,6 +49,9 @@ button:hover {
 button:focus {
 	outline: none;
 }
+
+
+/* ---------- table data elements -----------*/
 table {
 	margin: 50px auto 100px auto;
 	width: 85%;
