@@ -10,4 +10,4 @@
 
 ## Demo
 
-View project demo at [https://https://dnguy104.github.io/Tracker/](https://https://dnguy104.github.io/Tracker/).
+View project demo at [https://dnguy104.github.io/Tracker/](https://dnguy104.github.io/Tracker/).
