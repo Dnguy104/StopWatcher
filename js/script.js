@@ -25,12 +25,6 @@ var timeList = {
 };
 
 var views = {
-	locationIsOn: 0,
-	initialized: false,
-	location: {
-		latitude: '',
-		longitude: ''
-	},
 	initialize: function() {
 		var localS  = localStorage.getItem('times');
 		if(localS) {
@@ -41,40 +35,9 @@ var views = {
 		handlers.recoverData();
 		this.displayTimes();
 		
-		var output = document.getElementById('location');
-		var mainBtn = document.getElementById('mainBtn');
-		var pending = document.getElementById('pending');
-		var checkbox = document.querySelector('input');
-
-		function success(position) {
-			views.location.latitude = position.coords.latitude.toFixed(4);
-			views.location.longitude = position.coords.longitude.toFixed(4);
-			if (!this.initialized) defaultList(true);
+		if (!handlers.locationIsOn) {
+			handlers.findLocation();
 		}
-
-		function error() {
-		    views.location.latitude = 'n/a';
-			views.location.longitude = 'n/a';
-			
-			views.locationIsOn = 0;
-			if (!this.initialized) defaultList(false);
-		}
-		
-		function defaultList(accept) {
-			views.initialized = true;
-			mainBtn.style.display = 'block';
-			pending.style.display = 'none';
-			checkbox.checked = accept;
-		}
-		
-		if (!this.locationIsOn) {
-			if (!navigator.geolocation){
-				output.innerHTML = '<p>Geolocation is not supported by your browser</p>';
-			    return;
-			}
-			this.locationIsOn = navigator.geolocation.watchPosition(success.bind(this), error.bind(this));
-		}
-
 	},
 	displayTimes: function() {
 		var timeTbl = document.getElementById('timeTbl');
@@ -105,31 +68,29 @@ var views = {
 			}
 				
 		});
-	},
-	endWatchLocation: function() {
-		if (this.locationIsOn) {
-			navigator.geolocation.clearWatch(this.locationIsOn);
-			views.location.latitude = 'n/a';
-			views.location.longitude = 'n/a';
-			views.locationIsOn = 0;
-		}
 	}
 };
 
 var handlers = {
+	locationIsOn: 0,
+	initialized: false,
+	location: {
+		latitude: '',
+		longitude: ''
+	},
 	start: function(time) {
 		timeList.addRow(time);
 		var newIndex = timeList.times.length - 1;
 		timeList.addData(newIndex, 'startTime', time);
-		timeList.addData(newIndex, 'startLocation', 'lat: ' + views.location.latitude
-			+ '<br>' + 'long: ' + views.location.longitude);
+		timeList.addData(newIndex, 'startLocation', 'lat: ' + this.location.latitude
+			+ '<br>' + 'long: ' + this.location.longitude);
 		views.displayTimes();
 	},
 	stop: function(time) {		
 		var newIndex = timeList.times.length - 1;
 		timeList.addData(newIndex, 'stopTime', time['currentTime']);
-		timeList.addData(newIndex, 'stopLocation', 'lat: ' + views.location.latitude
-			 + '<br>' + 'long: ' + views.location.longitude);
+		timeList.addData(newIndex, 'stopLocation', 'lat: ' + this.location.latitude
+			 + '<br>' + 'long: ' + this.location.longitude);
 		timeList.addData(newIndex, 'elapsedTime', time['stopwatchTime']);
 		
 		timeList.complete(newIndex);
@@ -182,17 +143,54 @@ var handlers = {
 
 		checkbox.addEventListener('change', function() {
 			if (checkbox.checked) {
-				views.initialized = false;
-				views.initialize();
+				handlers.findLocation();
 			}
 			else {
-				views.endWatchLocation(this.locationIsOn);
+				handlers.endWatchLocation(this.locationIsOn);
 				checkbox.checked = false;
 			}
 		});	
 	},
 	findLocation: function() {
+		var output = document.getElementById('location');
+		var mainBtn = document.getElementById('mainBtn');
+		var pending = document.getElementById('pending');
+		var checkbox = document.querySelector('input');
+
+		function success(position) {
+			this.location.latitude = position.coords.latitude.toFixed(4);
+			this.location.longitude = position.coords.longitude.toFixed(4);
+			if (!this.initialized) defaultList(true);
+		}
+
+		function error() {
+		    this.location.latitude = 'n/a';
+			this.location.longitude = 'n/a';
+			
+			this.locationIsOn = 0;
+			if (!this.initialized) defaultList(false);
+		}
 		
+		function defaultList(accept) {
+			this.initialized = true;
+			mainBtn.style.display = 'block';
+			pending.style.display = 'none';
+			checkbox.checked = accept;
+		}
+		
+		if (!navigator.geolocation){
+			output.innerHTML = '<p>Geolocation is not supported by your browser</p>';
+		    return;
+		}
+		this.locationIsOn = navigator.geolocation.watchPosition(success.bind(this), error.bind(this));
+	},
+	endWatchLocation: function() {
+		if (this.locationIsOn) {
+			navigator.geolocation.clearWatch(this.locationIsOn);
+			this.location.latitude = 'n/a';
+			this.location.longitude = 'n/a';
+			this.locationIsOn = 0;
+		}
 	}
 };
 
